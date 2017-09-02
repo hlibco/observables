@@ -1,0 +1,148 @@
+<html>
+</head></head>
+<body>
+
+<style type="text/css">
+.container {
+  font-family: helvetica, arial, verdana;
+  margin: 42px auto;
+  max-width: 400px;
+}
+strong {
+  display: block;
+  font-size: 48px;
+  margin-bottom: 24px;
+  text-align: center;
+}
+input {
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  font-size: 28px;
+  line-height: 28px;
+  margin-bottom: 64px;
+  outline: 0;
+  padding: 8px;
+  width: 100%
+}
+input:focus {
+  border-color: #000;
+}
+h1, h2 {
+  font-size: 32px;
+  line-height: 1.25;
+  margin: 16px 0;
+  padding: 0;
+}
+button {
+  background: #79f9a3;
+  border: 2px solid transparent;
+  color: #000;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  margin-right: 16px;
+  outline: 0;
+  padding: 8px 12px;
+  text-transform: uppercase;
+}
+button:hover {
+  border-color: #000;
+}
+.unsubscribe {
+  background: #f98279;
+}
+
+.github {
+  border-top: 1px solid #ddd;
+  margin-top: 42px;
+  padding-top: 36px;
+  text-align: center;
+}
+a {
+  color: #000;
+}
+a:visited {
+  color: #000
+}
+</style>
+
+<div class="container">
+  <strong>OBSERVABLES.</strong>
+
+  <input type="text" id="input-title" />
+
+  <h1 id="h1-title">H1</h1>
+  <button onClick="javascript: subscribe('updateH1')">Subscribe</button>
+  <button onClick="javascript: unsubscribe('updateH1')" class="unsubscribe">Unsubscribe</button>
+
+  <br /><br />
+  <br /><br />
+
+  <h1 id="h2-title">H2</h1>
+  <button onClick="javascript: subscribe('updateH2')">Subscribe</button>
+  <button onClick="javascript: unsubscribe('updateH2')" class="unsubscribe">Unsubscribe</button>
+
+  <div class="github">
+    <a href="https://github.com/hlibco/observables">https://github.com/hlibco/observables</a>
+  </div>
+</div>
+
+
+<script>
+class Observable {
+  // Setup observers
+  constructor() {
+    this.observers = [];
+  }
+
+  // Subscribe to a new object / DOM element
+  subscribe(f) {
+    this.observers.push(f);
+  }
+
+  // Unsubscribe from a particular object
+  unsubscribe(f) {
+    this.observers = this.observers.filter(subscriber => subscriber !== f);
+  }
+
+  // Update all subscribed objects / DOM elements
+  // and pass some data to each of them
+  notify(data) {
+    this.observers.forEach(observer => observer(data));
+  }
+}
+
+
+
+// Some DOM references
+const input = document.getElementById('input-title');
+const h1 = document.getElementById('h1-title');
+const h2 = document.getElementById('h2-title');
+
+// Some actions to add to the observers array
+function updateH1 (text) { h1.textContent = text }
+function updateH2 (text) { h2.textContent = text }
+
+// Instantiate new Observer class
+const headingsObserver = new Observable();
+
+// Notify all observers about new data on event
+input.addEventListener('keyup', e => {
+  headingsObserver.notify(e.target.value);
+});
+
+// Subscribe to some observers
+function subscribe (fName) {
+  const f = window[fName]
+  headingsObserver.subscribe(f);
+}
+
+// Unsubscribe fromo observers
+function unsubscribe (fName) {
+  const f = window[fName]
+  headingsObserver.unsubscribe(f);
+}
+</script>
+
+</body>
+</html>
